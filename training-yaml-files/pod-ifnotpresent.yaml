@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: cimi-nextjs
+  name: cimi-nextjs
+spec:
+  containers:
+  - image: cimi-tag
+    imagePullPolicy: IfNotPresent
+    name: cimi-nextjs
+    resources: {}
+  - name: nginx
+    image: nginx
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}

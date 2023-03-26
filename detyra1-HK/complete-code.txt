@@ -1,0 +1,390 @@
+Hapat e detyres
+
+1. Apply –f all the created yaml files: 
+    - Namespace 
+    - Configmap 
+    - Secret 
+    - Deployment 
+ 
+hkrasniqi@Hashims-MacBook-Pro cimi-devops-training % cd detyra 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl apply -f namespace.yaml 
+namespace/nginx-ns created 
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl apply -f configmap.yaml 
+configmap/configmap created 
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl apply -f secret.yaml    
+secret/secret created 
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl apply -f deployment.yaml 
+deployment.apps/nginx-deployment created 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+
+
+2. Verify services via show commands 
+
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl get ns -n nginx=ns 
+NAME              STATUS   AGE 
+default           Active   18d 
+kube-node-lease   Active   18d 
+kube-public       Active   18d 
+kube-system       Active   18d 
+nginx-ns          Active   70m 
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl get secret -n nginx-ns   
+NAME         TYPE     DATA   AGE 
+env-secret   Opaque   1      47s 
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl get configmap -n nginx-ns 
+NAME               DATA   AGE 
+env-configmap      1      62s 
+kube-root-ca.crt   1      70m 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl get pod -n nginx-ns 
+NAME                               READY   STATUS    RESTARTS   AGE 
+nginx-deployment-b6b7f8596-6c2zx   1/1     Running   0          55s 
+nginx-deployment-b6b7f8596-rbbxn   1/1     Running   0          55s 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl describe pod nginx-deployment-b6b7f8596-6c2zx -n nginx-ns 
+Name:             nginx-deployment-b6b7f8596-6c2zx 
+Namespace:        nginx-ns 
+Priority:         0 
+Service Account:  default 
+Node:             docker-desktop/192.168.65.4 
+Start Time:       Mon, 20 Mar 2023 23:53:17 +0100 
+Labels:           app=nginx 
+                  pod-template-hash=b6b7f8596 
+Annotations:      <none> 
+Status:           Running 
+IP:               10.1.0.176 
+IPs: 
+  IP:           10.1.0.176 
+Controlled By:  ReplicaSet/nginx-deployment-b6b7f8596 
+Containers: 
+  nginx-pod-detyra: 
+    Container ID:   docker://23b2c6e140965299912337b707c7091cfc3b11a2e0e84c6cad704c95ddc856e7 
+    Image:          nginx:1.16.1 
+    Image ID:       docker-pullable://nginx@sha256:d20aa6d1cae56fd17cd458f4807e0de462caf2336f0b70b5eeb69fcaaf30dd9c 
+    Port:           80/TCP 
+    Host Port:      0/TCP 
+    State:          Running 
+      Started:      Mon, 20 Mar 2023 23:53:19 +0100 
+    Ready:          True 
+    Restart Count:  0 
+    Environment Variables from: 
+      env-configmap  ConfigMap  Optional: false 
+      env-secret     Secret     Optional: false 
+    Environment:     <none> 
+    Mounts: 
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-j9vw7 (ro) 
+Conditions: 
+  Type              Status 
+  Initialized       True  
+  Ready             True  
+  ContainersReady   True  
+  PodScheduled      True  
+Volumes: 
+  kube-api-access-j9vw7: 
+    Type:                    Projected (a volume that contains injected data from multiple sources) 
+    TokenExpirationSeconds:  3607 
+    ConfigMapName:           kube-root-ca.crt 
+    ConfigMapOptional:       <nil> 
+    DownwardAPI:             true 
+QoS Class:                   BestEffort 
+Node-Selectors:              <none> 
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s 
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s 
+Events: 
+  Type    Reason     Age   From               Message 
+  ----    ------     ----  ----               ------- 
+  Normal  Scheduled  71s   default-scheduler  Successfully assigned nginx-ns/nginx-deployment-b6b7f8596-6c2zx to docker-desktop 
+  Normal  Pulled     70s   kubelet            Container image "nginx:1.16.1" already present on machine 
+  Normal  Created    70s   kubelet            Created container nginx-pod-detyra 
+  Normal  Started    69s   kubelet            Started container nginx-pod-detyra 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl describe deployment nginx-deployment -n nginx-ns 
+Name:                   nginx-deployment 
+Namespace:              nginx-ns 
+CreationTimestamp:      Mon, 20 Mar 2023 23:53:17 +0100 
+Labels:                 app=nginx 
+Annotations:            deployment.kubernetes.io/revision: 1 
+Selector:               app=nginx 
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable 
+StrategyType:           RollingUpdate 
+MinReadySeconds:        0 
+RollingUpdateStrategy:  25% max unavailable, 25% max surge 
+Pod Template: 
+  Labels:  app=nginx 
+  Containers: 
+   nginx-pod-detyra: 
+    Image:      nginx:1.16.1 
+    Port:       80/TCP 
+    Host Port:  0/TCP 
+    Environment Variables from: 
+      env-configmap  ConfigMap  Optional: false 
+      env-secret     Secret     Optional: false 
+    Environment:     <none> 
+    Mounts:          <none> 
+  Volumes:           <none> 
+Conditions: 
+  Type           Status  Reason 
+  ----           ------  ------ 
+  Available      True    MinimumReplicasAvailable 
+  Progressing    True    NewReplicaSetAvailable 
+OldReplicaSets:  <none> 
+NewReplicaSet:   nginx-deployment-b6b7f8596 (2/2 replicas created) 
+Events: 
+  Type    Reason             Age    From                   Message 
+  ----    ------             ----   ----                   ------- 
+  Normal  ScalingReplicaSet  5m22s  deployment-controller  Scaled up replica set nginx-deployment-b6b7f8596 to 2 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+ 
+
+
+3. Change "image" to Latest
+    - Change the Image to LATEST 
+    - Check rollout status. 
+    - Check the revision 2 which was created after image change 
+    - Add annotation and check rollout 
+ 
+
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl set image deployment.v1.apps/nginx-deployment nginx-pod-detyra=nginx:latest -n nginx-ns 
+deployment.apps/nginx-deployment image updated 
+hkrasniqi@Hashims-MacBook-Pro detyra %   
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl rollout status deployment/nginx-deployment -n nginx-ns 
+deployment "nginx-deployment" successfully rolled out 
+hkrasniqi@Hashims-MacBook-Pro detyra %   
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl get deployments -n nginx-ns 
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE 
+nginx-deployment   2/2     2            2           32m 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl describe deployment nginx-deployment -n nginx-ns 
+Name:                   nginx-deployment 
+Namespace:              nginx-ns 
+CreationTimestamp:      Mon, 20 Mar 2023 23:53:17 +0100 
+Labels:                 app=nginx 
+Annotations:            deployment.kubernetes.io/revision: 2 
+Selector:               app=nginx 
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable 
+StrategyType:           RollingUpdate 
+MinReadySeconds:        0 
+RollingUpdateStrategy:  25% max unavailable, 25% max surge 
+Pod Template: 
+  Labels:  app=nginx 
+  Containers: 
+   nginx-pod-detyra: 
+    Image:      nginx:latest 
+    Port:       80/TCP 
+    Host Port:  0/TCP 
+    Environment Variables from: 
+      env-configmap  ConfigMap  Optional: false 
+      env-secret     Secret     Optional: false 
+    Environment:     <none> 
+    Mounts:          <none> 
+  Volumes:           <none> 
+Conditions: 
+  Type           Status  Reason 
+  ----           ------  ------ 
+  Available      True    MinimumReplicasAvailable 
+  Progressing    True    NewReplicaSetAvailable 
+OldReplicaSets:  <none> 
+NewReplicaSet:   nginx-deployment-5d8dd47c6b (2/2 replicas created) 
+Events: 
+  Type    Reason             Age    From                   Message 
+  ----    ------             ----   ----                   ------- 
+  Normal  ScalingReplicaSet  33m    deployment-controller  Scaled up replica set nginx-deployment-b6b7f8596 to 2 
+  Normal  ScalingReplicaSet  3m31s  deployment-controller  Scaled up replica set nginx-deployment-5d8dd47c6b to 1 
+  Normal  ScalingReplicaSet  3m29s  deployment-controller  Scaled down replica set nginx-deployment-b6b7f8596 to 1 from 2 
+  Normal  ScalingReplicaSet  3m29s  deployment-controller  Scaled up replica set nginx-deployment-5d8dd47c6b to 2 from 1 
+  Normal  ScalingReplicaSet  3m28s  deployment-controller  Scaled down replica set nginx-deployment-b6b7f8596 to 0 from 1 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl get rs -n nginx-ns 
+NAME                          DESIRED   CURRENT   READY   AGE 
+nginx-deployment-5d8dd47c6b   2         2         2       4m59s 
+nginx-deployment-b6b7f8596    0         0         0       34m 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl get pods -n nginx-ns  
+NAME                                READY   STATUS    RESTARTS   AGE 
+nginx-deployment-5d8dd47c6b-chk95   1/1     Running   0          5m45s 
+nginx-deployment-5d8dd47c6b-n6pbx   1/1     Running   0          5m43s 
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl rollout status deployment/nginx-deployment -n nginx-ns 
+deployment "nginx-deployment" successfully rolled out 
+krasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl rollout history deployment/nginx-deployment -n nginx-ns 
+deployment.apps/nginx-deployment  
+REVISION  CHANGE-CAUSE 
+1         <none> 
+2         <none> 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl annotate deployment/nginx-deployment -n nginx-ns kubernetes.io/change-cause="image updated to latest" 
+deployment.apps/nginx-deployment annotated 
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl rollout history deployment/nginx-deployment -n nginx-ns                                               
+deployment.apps/nginx-deployment  
+REVISION  CHANGE-CAUSE 
+1         <none> 
+2         image updated to latest 
+  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+
+
+4. Rollback to 1st revision 
+    - Check revisions 1 and 2, verify their config. 
+    - Do a rollback to 1st revision 
+    - Verify we are back to the original values 
+
+
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl rollout history deployment/nginx-deployment -n nginx-ns --revision=2 
+deployment.apps/nginx-deployment with revision #2 
+Pod Template: 
+  Labels:       app=nginx 
+        pod-template-hash=5d8dd47c6b 
+  Annotations:  kubernetes.io/change-cause: image updated to latest 
+  Containers: 
+   nginx-pod-detyra: 
+    Image:      nginx:latest 
+    Port:       80/TCP 
+    Host Port:  0/TCP 
+    Environment Variables from: 
+      env-configmap     ConfigMap       Optional: false 
+      env-secret        Secret  Optional: false 
+    Environment:        <none> 
+    Mounts:     <none> 
+  Volumes:      <none> 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl rollout history deployment/nginx-deployment -n nginx-ns --revision=1 
+deployment.apps/nginx-deployment with revision #1 
+Pod Template: 
+  Labels:       app=nginx 
+        pod-template-hash=b6b7f8596 
+  Containers: 
+   nginx-pod-detyra: 
+    Image:      nginx:1.16.1 
+    Port:       80/TCP 
+    Host Port:  0/TCP 
+    Environment Variables from: 
+      env-configmap     ConfigMap       Optional: false 
+      env-secret        Secret  Optional: false 
+    Environment:        <none> 
+    Mounts:     <none> 
+  Volumes:      <none> 
+  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl rollout undo deployment/nginx-deployment -n nginx-ns --to-revision=1 
+deployment.apps/nginx-deployment rolled back 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl describe pod nginx-deployment-b6b7f8596-dlxjw -n nginx-ns 
+Name:             nginx-deployment-b6b7f8596-dlxjw 
+Namespace:        nginx-ns 
+Priority:         0 
+Service Account:  default 
+Node:             docker-desktop/192.168.65.4 
+Start Time:       Tue, 21 Mar 2023 00:49:28 +0100 
+Labels:           app=nginx 
+                  pod-template-hash=b6b7f8596 
+Annotations:      <none> 
+Status:           Running 
+IP:               10.1.0.187 
+IPs: 
+  IP:           10.1.0.187 
+Controlled By:  ReplicaSet/nginx-deployment-b6b7f8596 
+Containers: 
+  nginx-pod-detyra: 
+    Container ID:   docker://342e8cb0dc2611bec3682812bc2052a1de389a7020cc9de6104475d75b41974c 
+    Image:          nginx:1.16.1 
+    Image ID:       docker-pullable://nginx@sha256:d20aa6d1cae56fd17cd458f4807e0de462caf2336f0b70b5eeb69fcaaf30dd9c 
+    Port:           80/TCP 
+    Host Port:      0/TCP 
+    State:          Running 
+      Started:      Tue, 21 Mar 2023 00:49:29 +0100 
+    Ready:          True 
+    Restart Count:  0 
+    Environment Variables from: 
+      env-configmap  ConfigMap  Optional: false 
+      env-secret     Secret     Optional: false 
+    Environment:     <none> 
+    Mounts: 
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-nwtbc (ro) 
+Conditions: 
+  Type              Status 
+  Initialized       True  
+  Ready             True  
+  ContainersReady   True  
+  PodScheduled      True  
+Volumes: 
+  kube-api-access-nwtbc: 
+    Type:                    Projected (a volume that contains injected data from multiple sources) 
+    TokenExpirationSeconds:  3607 
+    ConfigMapName:           kube-root-ca.crt 
+    ConfigMapOptional:       <nil> 
+    DownwardAPI:             true 
+QoS Class:                   BestEffort 
+Node-Selectors:              <none> 
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s 
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s 
+Events: 
+  Type    Reason     Age   From               Message 
+  ----    ------     ----  ----               ------- 
+  Normal  Scheduled  70s   default-scheduler  Successfully assigned nginx-ns/nginx-deployment-b6b7f8596-dlxjw to docker-desktop 
+  Normal  Pulled     69s   kubelet            Container image "nginx:1.16.1" already present on machine 
+  Normal  Created    69s   kubelet            Created container nginx-pod-detyra 
+  Normal  Started    69s   kubelet            Started container nginx-pod-detyra 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+hkrasniqi@Hashims-MacBook-Pro detyra % kubectl describe deployment nginx-deployment -n nginx-ns 
+Name:                   nginx-deployment 
+Namespace:              nginx-ns 
+CreationTimestamp:      Mon, 20 Mar 2023 23:53:17 +0100 
+Labels:                 app=nginx 
+Annotations:            deployment.kubernetes.io/revision: 3 
+Selector:               app=nginx 
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable 
+StrategyType:           RollingUpdate 
+MinReadySeconds:        0 
+RollingUpdateStrategy:  25% max unavailable, 25% max surge 
+Pod Template: 
+  Labels:  app=nginx 
+  Containers: 
+   nginx-pod-detyra: 
+    Image:      nginx:1.16.1 
+    Port:       80/TCP 
+    Host Port:  0/TCP 
+    Environment Variables from: 
+      env-configmap  ConfigMap  Optional: false 
+      env-secret     Secret     Optional: false 
+    Environment:     <none> 
+    Mounts:          <none> 
+  Volumes:           <none> 
+Conditions: 
+  Type           Status  Reason 
+  ----           ------  ------ 
+  Available      True    MinimumReplicasAvailable 
+  Progressing    True    NewReplicaSetAvailable 
+OldReplicaSets:  <none> 
+NewReplicaSet:   nginx-deployment-b6b7f8596 (2/2 replicas created) 
+Events: 
+  Type    Reason             Age    From                   Message 
+  ----    ------             ----   ----                   ------- 
+  Normal  ScalingReplicaSet  59m    deployment-controller  Scaled up replica set nginx-deployment-b6b7f8596 to 2 
+  Normal  ScalingReplicaSet  29m    deployment-controller  Scaled up replica set nginx-deployment-5d8dd47c6b to 1 
+  Normal  ScalingReplicaSet  29m    deployment-controller  Scaled down replica set nginx-deployment-b6b7f8596 to 1 from 2 
+  Normal  ScalingReplicaSet  29m    deployment-controller  Scaled up replica set nginx-deployment-5d8dd47c6b to 2 from 1 
+  Normal  ScalingReplicaSet  29m    deployment-controller  Scaled down replica set nginx-deployment-b6b7f8596 to 0 from 1 
+  Normal  ScalingReplicaSet  2m59s  deployment-controller  Scaled up replica set nginx-deployment-b6b7f8596 to 1 from 0 
+  Normal  ScalingReplicaSet  2m57s  deployment-controller  Scaled down replica set nginx-deployment-5d8dd47c6b to 1 from 2 
+  Normal  ScalingReplicaSet  2m57s  deployment-controller  Scaled up replica set nginx-deployment-b6b7f8596 to 2 from 1 
+  Normal  ScalingReplicaSet  2m56s  deployment-controller  Scaled down replica set nginx-deployment-5d8dd47c6b to 0 from 1 
+hkrasniqi@Hashims-MacBook-Pro detyra %  
+ 

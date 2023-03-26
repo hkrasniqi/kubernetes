@@ -1,0 +1,15 @@
+namespace: nextjs-namespace
+appName: cimi-next-app
+hostname: cimi.app.com
+app: nextjs
+service: nextjs-service
+ingress: nextjs-ingress
+replicas: 3
+imagePullPolicy: IfNotPresent
+imageName: cimi-tag 
+imageTag: latest
+servicePort: 80
+containerPort: 3000
+livenessProbe:
+  initialDelaySeconds: 15
+  periodSeconds: 20

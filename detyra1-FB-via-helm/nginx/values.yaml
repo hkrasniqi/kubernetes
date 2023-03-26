@@ -1,0 +1,20 @@
+namespace: nginx-ns
+app_name: nginx
+database:
+  hostname: db.hostname
+  password: mydbpw
+app_label: nginx
+replicas: 2
+container:
+  name: nginx
+  image: nginx
+  image_tag: 1.16.1
+  port: 80
+  volume: 
+    name: config
+    mountPath: /config
+volume:
+  accessMode: ReadWriteOnce
+  mode: Filesystem
+  storage: 1Gi
+  storageClassName: hostpath
